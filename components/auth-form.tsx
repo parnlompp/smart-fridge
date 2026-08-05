@@ -6,11 +6,13 @@ import { createClient } from "@/lib/supabase/client";
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const router = useRouter();
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setMessage("");
     const fd = new FormData(e.currentTarget),
       email = String(fd.get("email")),
       password = String(fd.get("password"));
@@ -32,6 +34,13 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           });
     if (result.error) {
       setError(result.error.message);
+      setLoading(false);
+      return;
+    }
+    if (mode === "signup" && !result.data.session) {
+      setMessage(
+        "Account created. Check your email to confirm it before signing in.",
+      );
       setLoading(false);
       return;
     }
@@ -69,6 +78,14 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           className="rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-700"
         >
           {error}
+        </p>
+      )}
+      {message && (
+        <p
+          role="status"
+          className="rounded-xl bg-emerald-50 p-3 text-sm font-semibold text-emerald-800"
+        >
+          {message}
         </p>
       )}
       <button disabled={loading} className="btn btn-primary w-full">
