@@ -8,4 +8,5 @@
 - Cooking scales quantities by selected/default servings. All required ingredients must have matching units and sufficient non-expired stock.
 - Production cooking locks inventory rows and validates all shortages before changing any quantity. It consumes earliest-expiring stock first and records history in the same transaction.
 - Zero-balance inventory rows are deleted. Negative balances are impossible through constraints and transaction logic.
+- Development signups receive a session immediately because email confirmation requires a configured SMTP provider. Production deployments must configure SMTP and re-enable confirmation.
 - Automatic unit conversion, barcode scanning, cross-contamination advice, household sharing, and push notifications are outside the first release.
