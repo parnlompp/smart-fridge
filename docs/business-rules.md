@@ -1,7 +1,7 @@
 # Business rules
 
 - Allergy names are trimmed, internal whitespace is collapsed, and comparisons are case-insensitive. Blank or duplicate names are rejected.
-- Allergen, dietary, and recognized religious filtering runs before scoring; excluded recipes never enter ordinary recommendations. The Halal dietary preference and Halal/Islam/Muslim religious restrictions only allow recipes marked Halal or belonging to vegetarian, vegan, or pescatarian categories. Other free-text religious restrictions require explicit recipe metadata before compatibility can be claimed.
+- Allergen, dietary, and recognized religious filtering runs before scoring; excluded recipes never enter ordinary recommendations. Imported Thai recipes are machine-classified from their structured ingredient lists as Vegan, Vegetarian, Pescatarian, No restriction, or Other. Halal filtering uses separate ingredient-compatibility metadata: obvious prohibited ingredients are excluded, land-animal recipes require review, and compatible plant/egg/dairy/seafood recipes carry a non-certification warning.
 - Expired means before today; today is distinct; “soon” means 1–3 days; fresh means more than 3 days. Estimated status is an overlay, never a safety claim.
 - Recommendation match is required ingredients present / total required ingredients. Optional ingredients do not affect the denominator, and expired stock is unavailable.
 - Recipe score is `(expiry priority × 50%) + (ingredient match × 30%) + (preference × 20%)`.
