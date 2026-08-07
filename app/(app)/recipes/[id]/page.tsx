@@ -70,9 +70,9 @@ export default function RecipeDetail() {
             <span className="badge bg-slate-100 text-slate-600">
               {dietLabel[recipe.dietaryCategory]}
             </span>
-            {recipe.source?.reviewStatus === "unreviewed" && (
+            {recipe.source?.reviewStatus === "machine-classified" && (
               <span className="badge bg-amber-100 text-amber-800">
-                รอตรวจสอบข้อมูลโภชนาการและข้อจำกัดอาหาร
+                จัดประเภทอาหารด้วยระบบอัตโนมัติ — ไม่ใช่การรับรอง
               </span>
             )}
           </div>
