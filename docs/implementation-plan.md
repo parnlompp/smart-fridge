@@ -41,17 +41,17 @@ middleware.ts
 
 ## 3. Required database schema
 
-| Table | Purpose | Ownership / key constraints |
-|---|---|---|
-| `profiles` | User preferences and setup state | PK/FK `id -> auth.users`; one row per user |
-| `allergies` | Normalised reference list | Unique normalised name; authenticated read |
-| `user_allergies` | User-to-allergy relation and custom labels | User-owned; unique `(user_id, allergy_id)` or normalised custom name |
-| `ingredients` | Ingredient catalogue and expiry rule key | Unique normalised name; authenticated read |
-| `user_inventory` | Quantities, storage, and expiry | User-owned; quantity > 0; expiry >= added date |
-| `recipes` | Recipe metadata and instructions | Authenticated read |
-| `recipe_ingredients` | Required/optional recipe quantities | Unique `(recipe_id, ingredient_id)`; quantity > 0 |
-| `shopping_list_items` | Manual and recipe-derived shopping needs | User-owned; quantity > 0 |
-| `cooking_history` | Immutable cooking audit | User-owned; positive servings; JSON deduction summary |
+| Table                 | Purpose                                    | Ownership / key constraints                                          |
+| --------------------- | ------------------------------------------ | -------------------------------------------------------------------- |
+| `profiles`            | User preferences and setup state           | PK/FK `id -> auth.users`; one row per user                           |
+| `allergies`           | Normalised reference list                  | Unique normalised name; authenticated read                           |
+| `user_allergies`      | User-to-allergy relation and custom labels | User-owned; unique `(user_id, allergy_id)` or normalised custom name |
+| `ingredients`         | Ingredient catalogue and expiry rule key   | Unique normalised name; authenticated read                           |
+| `user_inventory`      | Quantities, storage, and expiry            | User-owned; quantity > 0; expiry >= added date                       |
+| `recipes`             | Recipe metadata and instructions           | Authenticated read                                                   |
+| `recipe_ingredients`  | Required/optional recipe quantities        | Unique `(recipe_id, ingredient_id)`; quantity > 0                    |
+| `shopping_list_items` | Manual and recipe-derived shopping needs   | User-owned; quantity > 0                                             |
+| `cooking_history`     | Immutable cooking audit                    | User-owned; positive servings; JSON deduction summary                |
 
 All user-owned tables have RLS policies bound to `auth.uid()`. Reference tables are read-only to authenticated users. Cooking uses one `security invoker` PostgreSQL function that locks inventory rows, validates every required quantity, performs all deductions/deletions, and writes history in the same transaction.
 

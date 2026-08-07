@@ -18,9 +18,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       password = String(fd.get("password"));
     const supabase = createClient();
     if (!supabase) {
-      setError(
-        "Supabase is not configured. Use Start demo to explore the application.",
-      );
+      setError("ยังไม่ได้ตั้งค่า Supabase โปรดใช้โหมดสาธิตเพื่อทดลองแอป");
       setLoading(false);
       return;
     }
@@ -38,9 +36,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       return;
     }
     if (mode === "signup" && !result.data.session) {
-      setMessage(
-        "Account created. Check your email to confirm it before signing in.",
-      );
+      setMessage("สร้างบัญชีแล้ว โปรดตรวจสอบอีเมลเพื่อยืนยันก่อนเข้าสู่ระบบ");
       setLoading(false);
       return;
     }
@@ -50,7 +46,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   return (
     <form onSubmit={submit} className="mt-8 space-y-5">
       <label>
-        <span className="label">Email address</span>
+        <span className="label">อีเมล</span>
         <input
           className="input"
           name="email"
@@ -61,7 +57,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         />
       </label>
       <label>
-        <span className="label">Password</span>
+        <span className="label">รหัสผ่าน</span>
         <input
           className="input"
           name="password"
@@ -69,7 +65,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           autoComplete={mode === "login" ? "current-password" : "new-password"}
           minLength={8}
           required
-          placeholder="At least 8 characters"
+          placeholder="อย่างน้อย 8 ตัวอักษร"
         />
       </label>
       {error && (
@@ -90,26 +86,24 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       )}
       <button disabled={loading} className="btn btn-primary w-full">
         {loading
-          ? "Please wait…"
+          ? "กรุณารอสักครู่..."
           : mode === "login"
-            ? "Sign in"
-            : "Create account"}
+            ? "เข้าสู่ระบบ"
+            : "สร้างบัญชี"}
       </button>
       <div className="relative my-4 text-center text-xs text-slate-400 before:absolute before:left-0 before:right-0 before:top-1/2 before:border-t">
-        <span className="relative bg-white px-3">or</span>
+        <span className="relative bg-white px-3">หรือ</span>
       </div>
       <Link className="btn btn-secondary w-full" href="/api/demo-session">
-        Continue with demo data
+        ใช้งานต่อด้วยข้อมูลสาธิต
       </Link>
       <p className="text-center text-sm text-slate-500">
-        {mode === "login"
-          ? "New to Smart Fridge? "
-          : "Already have an account? "}
+        {mode === "login" ? "ยังไม่มีบัญชีใช่ไหม? " : "มีบัญชีอยู่แล้วใช่ไหม? "}
         <Link
           className="font-bold text-[#2f7d5c]"
           href={mode === "login" ? "/signup" : "/login"}
         >
-          {mode === "login" ? "Create account" : "Sign in"}
+          {mode === "login" ? "สร้างบัญชี" : "เข้าสู่ระบบ"}
         </Link>
       </p>
     </form>

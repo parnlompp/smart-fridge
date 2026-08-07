@@ -1,5 +1,6 @@
 "use client";
 import { format } from "date-fns";
+import { th } from "date-fns/locale";
 import { IconChefHat } from "@tabler/icons-react";
 import { PageHeading } from "@/components/page-heading";
 import { useDemo } from "@/components/demo-provider";
@@ -8,9 +9,9 @@ export default function History() {
   return (
     <div className="page">
       <PageHeading
-        eyebrow="Your progress"
-        title="Cooking history"
-        description="A transparent record of meals cooked and the inventory quantities deducted."
+        eyebrow="ความคืบหน้าของคุณ"
+        title="ประวัติการทำอาหาร"
+        description="บันทึกเมนูที่ปรุงและปริมาณวัตถุดิบที่ถูกหักออก"
       />
       <section className="card overflow-hidden">
         {history.map((h) => (
@@ -24,8 +25,10 @@ export default function History() {
             <div className="min-w-[180px] flex-1">
               <h2 className="font-extrabold">{h.recipeName}</h2>
               <p className="mt-1 text-xs text-slate-500">
-                {format(new Date(h.cookedAt), "dd MMM yyyy, h:mm a")} ·{" "}
-                {h.servings} servings
+                {format(new Date(h.cookedAt), "d MMM yyyy เวลา HH:mm", {
+                  locale: th,
+                })}{" "}
+                · {h.servings} ที่เสิร์ฟ
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -40,9 +43,9 @@ export default function History() {
         {history.length === 0 && (
           <div className="p-12 text-center">
             <div className="text-5xl">🍽️</div>
-            <h2 className="mt-4 font-bold">No meals recorded yet</h2>
+            <h2 className="mt-4 font-bold">ยังไม่มีประวัติการทำอาหาร</h2>
             <p className="text-sm text-slate-500">
-              Cook a recipe to see it here.
+              เมื่อทำอาหารแล้ว รายการจะแสดงที่นี่
             </p>
           </div>
         )}

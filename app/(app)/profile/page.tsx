@@ -5,6 +5,7 @@ import { PageHeading } from "@/components/page-heading";
 import { useDemo } from "@/components/demo-provider";
 import { validateNewAllergy } from "@/lib/business/allergies";
 import type { DietaryPreference } from "@/lib/types";
+import { allergenLabel, dietLabel, healthGoalLabel } from "@/lib/thai-labels";
 const common = [
   "Peanuts",
   "Tree nuts",
@@ -35,16 +36,16 @@ export default function Profile() {
   return (
     <div className="page">
       <PageHeading
-        eyebrow="Personalisation"
-        title="Your food profile"
-        description="We use these preferences only to filter unsafe or unsuitable recipe suggestions."
+        eyebrow="การตั้งค่าส่วนบุคคล"
+        title="โปรไฟล์การรับประทานอาหาร"
+        description="เราใช้ข้อมูลเหล่านี้เพื่อคัดกรองสูตรอาหารที่ไม่ปลอดภัยหรือไม่เหมาะกับคุณ"
       />
       <div className="grid max-w-4xl gap-6">
         <section className="card p-6">
-          <h2 className="text-lg font-extrabold">About you</h2>
+          <h2 className="text-lg font-extrabold">ข้อมูลของคุณ</h2>
           <div className="mt-5 grid gap-5 md:grid-cols-2">
             <label>
-              <span className="label">Display name</span>
+              <span className="label">ชื่อที่แสดง</span>
               <input
                 className="input"
                 value={draft.displayName}
@@ -54,7 +55,7 @@ export default function Profile() {
               />
             </label>
             <label>
-              <span className="label">Dietary preference</span>
+              <span className="label">รูปแบบการรับประทานอาหาร</span>
               <select
                 className="input"
                 value={draft.dietaryPreference}
@@ -73,12 +74,14 @@ export default function Profile() {
                   "Halal",
                   "Other",
                 ].map((x) => (
-                  <option key={x}>{x}</option>
+                  <option key={x} value={x}>
+                    {dietLabel[x as DietaryPreference]}
+                  </option>
                 ))}
               </select>
             </label>
             <label>
-              <span className="label">Health goal</span>
+              <span className="label">เป้าหมายด้านสุขภาพ</span>
               <select
                 className="input"
                 value={draft.healthGoal}
@@ -93,14 +96,16 @@ export default function Profile() {
                   "Reduce sugar",
                   "No specific goal",
                 ].map((x) => (
-                  <option key={x}>{x}</option>
+                  <option key={x} value={x}>
+                    {healthGoalLabel[x]}
+                  </option>
                 ))}
               </select>
             </label>
             <label>
               <span className="label">
-                Religious restriction{" "}
-                <span className="font-normal text-slate-400">(optional)</span>
+                ข้อจำกัดทางศาสนา{" "}
+                <span className="font-normal text-slate-400">(ไม่บังคับ)</span>
               </span>
               <input
                 className="input"
@@ -108,16 +113,16 @@ export default function Profile() {
                 onChange={(e) =>
                   setDraft({ ...draft, religiousRestriction: e.target.value })
                 }
-                placeholder="Leave blank if none"
+                placeholder="เว้นว่างหากไม่มี"
               />
             </label>
           </div>
         </section>
         <section className="card p-6">
-          <h2 className="text-lg font-extrabold">Allergies</h2>
+          <h2 className="text-lg font-extrabold">อาหารที่แพ้</h2>
           <p className="mt-1 text-sm leading-6 text-[#68766f]">
-            Recipes containing a selected allergen are excluded. This supports
-            planning but does not account for cross-contamination.
+            ระบบจะไม่แสดงสูตรที่มีสารก่อภูมิแพ้ที่คุณเลือก ข้อมูลนี้ช่วย
+            ในการวางแผนเท่านั้น และไม่ครอบคลุมการปนเปื้อนข้าม
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             {common.map((item) => {
@@ -141,19 +146,19 @@ export default function Profile() {
                   className={`rounded-full border px-3 py-2 text-sm font-semibold ${active ? "border-[#2f7d5c] bg-[#e1efe4] text-[#215c41]" : "border-[#d9e0da] bg-white text-[#617068]"}`}
                 >
                   {active ? "✓ " : ""}
-                  {item}
+                  {allergenLabel[item] ?? item}
                 </button>
               );
             })}
           </div>
           <div className="mt-6 border-t pt-5">
-            <span className="label">Custom allergy</span>
+            <span className="label">อาหารที่แพ้อื่น ๆ</span>
             <div className="flex gap-2">
               <input
                 className="input max-w-sm"
                 value={custom}
                 onChange={(e) => setCustom(e.target.value)}
-                placeholder="e.g. Mustard"
+                placeholder="เช่น มัสตาร์ด"
               />
               <button
                 type="button"
@@ -182,7 +187,7 @@ export default function Profile() {
                   <span className="badge bg-[#e7eee8] text-[#2d5945]" key={x}>
                     {x}
                     <button
-                      aria-label={`Remove ${x}`}
+                      aria-label={`ลบ ${allergenLabel[x] ?? x}`}
                       onClick={() =>
                         setDraft({
                           ...draft,
@@ -205,14 +210,14 @@ export default function Profile() {
               setSaved(true);
             }}
           >
-            Save profile
+            บันทึกโปรไฟล์
           </button>
           {saved && (
             <span
               role="status"
               className="ml-4 text-sm font-bold text-emerald-700"
             >
-              Profile saved.
+              บันทึกโปรไฟล์แล้ว
             </span>
           )}
         </div>

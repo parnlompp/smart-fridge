@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { format } from "date-fns";
+import { th } from "date-fns/locale";
 import {
   IconArrowRight,
   IconChefHat,
@@ -22,27 +23,47 @@ export default function Dashboard() {
     (i) => getExpiryStatus(i.expiryDate).status === "expired",
   );
   const stats = [
-    { label: "Total ingredients", value: inventory.length, Icon: IconFridge, bg: "#e6efe1" },
-    { label: "Expiring soon", value: attention.length - expired.length, Icon: IconClock, bg: "#fff1cf" },
-    { label: "Expired", value: expired.length, Icon: IconFridge, bg: "#fce5df" },
-    { label: "Recommended", value: analyses.length, Icon: IconChefHat, bg: "#e4e9f6" },
+    {
+      label: "วัตถุดิบทั้งหมด",
+      value: inventory.length,
+      Icon: IconFridge,
+      bg: "#e6efe1",
+    },
+    {
+      label: "ใกล้หมดอายุ",
+      value: attention.length - expired.length,
+      Icon: IconClock,
+      bg: "#fff1cf",
+    },
+    {
+      label: "หมดอายุแล้ว",
+      value: expired.length,
+      Icon: IconFridge,
+      bg: "#fce5df",
+    },
+    {
+      label: "สูตรแนะนำ",
+      value: analyses.length,
+      Icon: IconChefHat,
+      bg: "#e4e9f6",
+    },
   ];
   const actions = [
-    { href: "/inventory/new", label: "Add ingredient", Icon: IconPlus },
-    { href: "/inventory", label: "View inventory", Icon: IconFridge },
-    { href: "/recipes", label: "Find recipes", Icon: IconChefHat },
-    { href: "/profile", label: "Edit profile", Icon: IconArrowRight },
+    { href: "/inventory/new", label: "เพิ่มวัตถุดิบ", Icon: IconPlus },
+    { href: "/inventory", label: "ดูวัตถุดิบ", Icon: IconFridge },
+    { href: "/recipes", label: "ค้นหาสูตรอาหาร", Icon: IconChefHat },
+    { href: "/profile", label: "แก้ไขโปรไฟล์", Icon: IconArrowRight },
   ];
   return (
     <div className="page">
       <PageHeading
-        eyebrow="Overview"
-        title={`Good morning, ${profile.displayName}`}
-        description="Here’s what’s happening in your kitchen today."
+        eyebrow="ภาพรวม"
+        title={`สวัสดี ${profile.displayName}`}
+        description="มาดูกันว่าวันนี้มีอะไรเกิดขึ้นในครัวของคุณบ้าง"
         action={
           <span className="hidden items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-semibold shadow-sm md:flex">
             <span className="size-2 rounded-full bg-emerald-500" />
-            Demo data active
+            กำลังใช้ข้อมูลสาธิต
           </span>
         }
       />
@@ -51,9 +72,7 @@ export default function Dashboard() {
           <div className="card p-5" key={label}>
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-xs font-bold text-[#738079]">
-                  {label}
-                </p>
+                <p className="text-xs font-bold text-[#738079]">{label}</p>
                 <p className="mt-2 text-3xl font-black">{value}</p>
               </div>
               <span
@@ -70,16 +89,16 @@ export default function Dashboard() {
         <section className="card p-6">
           <div className="mb-5 flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-extrabold">Use these first</h2>
+              <h2 className="text-lg font-extrabold">ควรใช้ก่อน</h2>
               <p className="mt-1 text-xs text-[#738079]">
-                Items closest to their expiry dates
+                วัตถุดิบที่ใกล้ถึงวันหมดอายุที่สุด
               </p>
             </div>
             <Link
               href="/inventory"
               className="text-sm font-bold text-[#2f7d5c]"
             >
-              View all
+              ดูทั้งหมด
             </Link>
           </div>
           <div className="space-y-2">
@@ -106,7 +125,9 @@ export default function Dashboard() {
                       <b className="block text-sm">{i.name}</b>
                       <span className="text-xs text-[#738079]">
                         {i.quantity} {i.unit} ·{" "}
-                        {format(new Date(i.expiryDate + "T12:00:00"), "dd MMM")}
+                        {format(new Date(i.expiryDate + "T12:00:00"), "d MMM", {
+                          locale: th,
+                        })}
                       </span>
                     </div>
                     <StatusBadge
@@ -115,10 +136,10 @@ export default function Dashboard() {
                     />
                     <span className="w-20 text-right text-xs font-semibold text-[#68766f]">
                       {d.daysRemaining < 0
-                        ? `${Math.abs(d.daysRemaining)}d overdue`
+                        ? `เกินมา ${Math.abs(d.daysRemaining)} วัน`
                         : d.daysRemaining === 0
-                          ? "Today"
-                          : `${d.daysRemaining}d left`}
+                          ? "วันนี้"
+                          : `เหลือ ${d.daysRemaining} วัน`}
                     </span>
                   </div>
                 );
@@ -128,19 +149,18 @@ export default function Dashboard() {
         <aside className="card overflow-hidden">
           <div className="bg-[#173f31] p-6 text-white">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#b8dbc3]">
-              <IconSparkles size={16} /> Top match
+              <IconSparkles size={16} /> สูตรที่ตรงที่สุด
             </div>
             <div className="my-5 text-6xl">{analyses[0]?.recipe.emoji}</div>
             <h2 className="text-xl font-extrabold">
               {analyses[0]?.recipe.name}
             </h2>
             <p className="mt-2 text-sm leading-6 text-white/65">
-              Uses {analyses[0]?.nearExpiry.length} ingredient
-              {analyses[0]?.nearExpiry.length === 1 ? "" : "s"} expiring soon.
+              ใช้วัตถุดิบใกล้หมดอายุ {analyses[0]?.nearExpiry.length} รายการ
             </p>
             <div className="mt-5 flex items-center justify-between">
               <span className="rounded-full bg-white/15 px-3 py-2 text-xs font-bold">
-                {analyses[0]?.percentage}% match
+                ตรงกัน {analyses[0]?.percentage}%
               </span>
               <Link
                 href={`/recipes/${analyses[0]?.recipe.id}`}
@@ -151,16 +171,18 @@ export default function Dashboard() {
             </div>
           </div>
           <div className="p-5">
-            <h3 className="text-sm font-extrabold">Recent activity</h3>
+            <h3 className="text-sm font-extrabold">กิจกรรมล่าสุด</h3>
             {history.slice(0, 2).map((h) => (
               <div className="mt-3 flex items-center gap-3" key={h.id}>
                 <span className="grid size-8 place-items-center rounded-full bg-[#edf3ea]">
                   ✓
                 </span>
                 <div>
-                  <p className="text-xs font-bold">Cooked {h.recipeName}</p>
+                  <p className="text-xs font-bold">ปรุง {h.recipeName}</p>
                   <p className="text-[11px] text-[#7c8982]">
-                    {format(new Date(h.cookedAt), "dd MMM · h:mm a")}
+                    {format(new Date(h.cookedAt), "d MMM เวลา HH:mm", {
+                      locale: th,
+                    })}
                   </p>
                 </div>
               </div>
@@ -169,7 +191,7 @@ export default function Dashboard() {
         </aside>
       </div>
       <section className="mt-6">
-        <h2 className="mb-3 text-lg font-extrabold">Quick actions</h2>
+        <h2 className="mb-3 text-lg font-extrabold">เมนูลัด</h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {actions.map(({ href, label, Icon }) => (
             <Link

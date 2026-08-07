@@ -6,31 +6,32 @@ import type {
   Profile,
   Recipe,
   ShoppingItem,
-  Unit,
 } from "./types";
+import { thaiRecipes } from "./thai-recipes";
 
 const day = (offset: number) =>
   formatISO(addDays(new Date(), offset), { representation: "date" });
 
 export const ingredients: Ingredient[] = [
-  ["chicken", "Chicken breast", "Meat"],
-  ["broccoli", "Broccoli", "Vegetables"],
-  ["carrot", "Carrot", "Vegetables"],
-  ["mushroom", "Mushroom", "Vegetables"],
-  ["egg", "Eggs", "Dairy", ["Eggs"]],
-  ["tomato", "Tomato", "Vegetables"],
-  ["pasta", "Pasta", "Grains", ["Wheat"]],
-  ["rice", "Rice", "Grains"],
-  ["spinach", "Spinach", "Vegetables"],
-  ["cheese", "Cheese", "Dairy", ["Milk"]],
-  ["bread", "Bread", "Grains", ["Wheat"]],
-  ["onion", "Onion", "Vegetables"],
-  ["milk", "Milk", "Dairy", ["Milk"]],
-  ["peanut", "Peanut butter", "Condiments", ["Peanuts"]],
-  ["noodle", "Noodles", "Grains", ["Wheat"]],
-  ["soy", "Soy sauce", "Condiments", ["Soy"]],
-  ["oil", "Cooking oil", "Condiments"],
-  ["garlic", "Garlic", "Vegetables"],
+  ["chicken", "อกไก่", "Meat"],
+  ["halal-chicken", "อกไก่ฮาลาล", "Meat"],
+  ["broccoli", "บรอกโคลี", "Vegetables"],
+  ["carrot", "แครอท", "Vegetables"],
+  ["mushroom", "เห็ด", "Vegetables"],
+  ["egg", "ไข่", "Dairy", ["Eggs"]],
+  ["tomato", "มะเขือเทศ", "Vegetables"],
+  ["pasta", "พาสต้า", "Grains", ["Wheat"]],
+  ["rice", "ข้าว", "Grains"],
+  ["spinach", "ผักโขม", "Vegetables"],
+  ["cheese", "ชีส", "Dairy", ["Milk"]],
+  ["bread", "ขนมปัง", "Grains", ["Wheat"]],
+  ["onion", "หอมหัวใหญ่", "Vegetables"],
+  ["milk", "นม", "Dairy", ["Milk"]],
+  ["peanut", "เนยถั่วลิสง", "Condiments", ["Peanuts"]],
+  ["noodle", "เส้นก๋วยเตี๋ยว", "Grains", ["Wheat"]],
+  ["soy", "ซีอิ๊ว", "Condiments", ["Soy"]],
+  ["oil", "น้ำมันปรุงอาหาร", "Condiments"],
+  ["garlic", "กระเทียม", "Vegetables"],
 ].map(([id, name, category, allergens]) => ({
   id: id as string,
   name: name as string,
@@ -38,212 +39,7 @@ export const ingredients: Ingredient[] = [
   allergens: allergens as string[] | undefined,
 }));
 
-const ri = (
-  ingredientId: string,
-  requiredQuantity: number,
-  unit: Unit,
-  isOptional = false,
-) => {
-  const ingredient = ingredients.find((item) => item.id === ingredientId)!;
-  return {
-    ingredientId,
-    name: ingredient.name,
-    requiredQuantity,
-    unit,
-    isOptional,
-    allergens: ingredient.allergens,
-  };
-};
-
-export const recipes: Recipe[] = [
-  {
-    id: "stir-fry",
-    name: "Chicken & vegetable stir-fry",
-    description:
-      "A quick, colourful weeknight stir-fry that makes the most of crisp vegetables.",
-    instructions: [
-      "Slice the chicken and vegetables.",
-      "Sear chicken in oil until cooked through.",
-      "Add vegetables and soy sauce; toss for 4 minutes.",
-      "Serve immediately.",
-    ],
-    preparationTime: 25,
-    difficulty: "Easy",
-    defaultServings: 2,
-    dietaryCategory: "No restriction",
-    emoji: "🥦",
-    ingredients: [
-      ri("chicken", 300, "g"),
-      ri("broccoli", 200, "g"),
-      ri("carrot", 120, "g"),
-      ri("soy", 30, "ml"),
-      ri("oil", 15, "ml", true),
-    ],
-  },
-  {
-    id: "omelette",
-    name: "Mushroom omelette",
-    description: "Fluffy eggs folded around savoury mushrooms and greens.",
-    instructions: [
-      "Slice and sauté mushrooms.",
-      "Whisk eggs and pour into the pan.",
-      "Add spinach, fold, and cook until just set.",
-    ],
-    preparationTime: 15,
-    difficulty: "Easy",
-    defaultServings: 2,
-    dietaryCategory: "Vegetarian",
-    emoji: "🍳",
-    ingredients: [
-      ri("egg", 4, "pieces"),
-      ri("mushroom", 150, "g"),
-      ri("spinach", 60, "g"),
-    ],
-  },
-  {
-    id: "tomato-pasta",
-    name: "Tomato pasta",
-    description: "Comforting pasta in a bright, garlicky tomato sauce.",
-    instructions: [
-      "Boil pasta until al dente.",
-      "Cook garlic and tomato into a sauce.",
-      "Toss together and season.",
-    ],
-    preparationTime: 20,
-    difficulty: "Easy",
-    defaultServings: 2,
-    dietaryCategory: "Vegan",
-    emoji: "🍝",
-    ingredients: [
-      ri("pasta", 200, "g"),
-      ri("tomato", 300, "g"),
-      ri("garlic", 10, "g"),
-    ],
-  },
-  {
-    id: "veg-rice",
-    name: "Vegetable fried rice",
-    description: "A fast pantry-friendly bowl loaded with vegetables.",
-    instructions: [
-      "Sauté vegetables.",
-      "Add cooked rice and soy sauce.",
-      "Stir-fry on high heat for 3 minutes.",
-    ],
-    preparationTime: 18,
-    difficulty: "Easy",
-    defaultServings: 2,
-    dietaryCategory: "Vegan",
-    emoji: "🍚",
-    ingredients: [
-      ri("rice", 250, "g"),
-      ri("carrot", 100, "g"),
-      ri("broccoli", 120, "g"),
-      ri("soy", 20, "ml"),
-    ],
-  },
-  {
-    id: "spinach-sandwich",
-    name: "Spinach & cheese sandwich",
-    description: "A golden toasted sandwich with a fresh spinach centre.",
-    instructions: [
-      "Layer bread with spinach and cheese.",
-      "Toast until crisp and melted.",
-    ],
-    preparationTime: 10,
-    difficulty: "Easy",
-    defaultServings: 1,
-    dietaryCategory: "Vegetarian",
-    emoji: "🥪",
-    ingredients: [
-      ri("bread", 2, "pieces"),
-      ri("spinach", 50, "g"),
-      ri("cheese", 40, "g"),
-    ],
-  },
-  {
-    id: "chicken-bowl",
-    name: "Chicken rice bowl",
-    description: "A balanced bowl with tender chicken and fresh vegetables.",
-    instructions: [
-      "Cook chicken until golden.",
-      "Warm rice and steam broccoli.",
-      "Assemble and drizzle with soy sauce.",
-    ],
-    preparationTime: 30,
-    difficulty: "Medium",
-    defaultServings: 2,
-    dietaryCategory: "No restriction",
-    emoji: "🥗",
-    ingredients: [
-      ri("chicken", 300, "g"),
-      ri("rice", 250, "g"),
-      ri("broccoli", 150, "g"),
-      ri("soy", 20, "ml"),
-    ],
-  },
-  {
-    id: "carrot-soup",
-    name: "Silky carrot soup",
-    description: "A warming, naturally sweet soup with a smooth finish.",
-    instructions: [
-      "Chop carrot and onion.",
-      "Simmer in water until tender.",
-      "Blend until smooth and season.",
-    ],
-    preparationTime: 35,
-    difficulty: "Easy",
-    defaultServings: 4,
-    dietaryCategory: "Vegan",
-    emoji: "🥕",
-    ingredients: [
-      ri("carrot", 500, "g"),
-      ri("onion", 150, "g"),
-      ri("garlic", 10, "g", true),
-    ],
-  },
-  {
-    id: "egg-rice",
-    name: "Egg fried rice",
-    description: "A satisfying classic ready in under twenty minutes.",
-    instructions: [
-      "Scramble eggs and set aside.",
-      "Stir-fry rice with vegetables.",
-      "Return eggs, season, and toss.",
-    ],
-    preparationTime: 18,
-    difficulty: "Easy",
-    defaultServings: 2,
-    dietaryCategory: "Vegetarian",
-    emoji: "🍚",
-    ingredients: [
-      ri("rice", 250, "g"),
-      ri("egg", 3, "pieces"),
-      ri("carrot", 80, "g"),
-      ri("soy", 20, "ml"),
-    ],
-  },
-  {
-    id: "peanut-noodle",
-    name: "Peanut noodle bowl",
-    description: "Creamy, savoury noodles with crunchy vegetables.",
-    instructions: [
-      "Boil noodles.",
-      "Whisk peanut butter with soy sauce.",
-      "Toss noodles in sauce and add vegetables.",
-    ],
-    preparationTime: 20,
-    difficulty: "Easy",
-    defaultServings: 2,
-    dietaryCategory: "Vegan",
-    emoji: "🥜",
-    ingredients: [
-      ri("noodle", 200, "g"),
-      ri("peanut", 60, "g"),
-      ri("soy", 20, "ml"),
-      ri("carrot", 80, "g"),
-    ],
-  },
-];
+export const recipes: Recipe[] = thaiRecipes;
 
 export const demoProfile: Profile = {
   displayName: "Alex",
@@ -254,9 +50,22 @@ export const demoProfile: Profile = {
 };
 export const demoInventory: InventoryItem[] = [
   {
+    id: "inv-halal-chicken",
+    ingredientId: "halal-chicken",
+    name: "อกไก่ฮาลาล",
+    category: "Meat",
+    quantity: 500,
+    unit: "g",
+    storageLocation: "Refrigerator",
+    addedDate: day(-1),
+    expiryDate: day(2),
+    expirySource: "entered",
+    notes: "ผลิตภัณฑ์ได้รับการรับรองฮาลาล",
+  },
+  {
     id: "inv-chicken",
     ingredientId: "chicken",
-    name: "Chicken breast",
+    name: "อกไก่",
     category: "Meat",
     quantity: 450,
     unit: "g",
@@ -268,7 +77,7 @@ export const demoInventory: InventoryItem[] = [
   {
     id: "inv-broccoli",
     ingredientId: "broccoli",
-    name: "Broccoli",
+    name: "บรอกโคลี",
     category: "Vegetables",
     quantity: 300,
     unit: "g",
@@ -280,7 +89,7 @@ export const demoInventory: InventoryItem[] = [
   {
     id: "inv-carrot",
     ingredientId: "carrot",
-    name: "Carrot",
+    name: "แครอท",
     category: "Vegetables",
     quantity: 600,
     unit: "g",
@@ -292,7 +101,7 @@ export const demoInventory: InventoryItem[] = [
   {
     id: "inv-rice",
     ingredientId: "rice",
-    name: "Rice",
+    name: "ข้าว",
     category: "Grains",
     quantity: 900,
     unit: "g",
@@ -304,7 +113,7 @@ export const demoInventory: InventoryItem[] = [
   {
     id: "inv-egg",
     ingredientId: "egg",
-    name: "Eggs",
+    name: "ไข่",
     category: "Dairy",
     quantity: 8,
     unit: "pieces",
@@ -316,7 +125,7 @@ export const demoInventory: InventoryItem[] = [
   {
     id: "inv-spinach",
     ingredientId: "spinach",
-    name: "Spinach",
+    name: "ผักโขม",
     category: "Vegetables",
     quantity: 120,
     unit: "g",
@@ -328,7 +137,7 @@ export const demoInventory: InventoryItem[] = [
   {
     id: "inv-soy",
     ingredientId: "soy",
-    name: "Soy sauce",
+    name: "ซีอิ๊ว",
     category: "Condiments",
     quantity: 250,
     unit: "ml",
@@ -340,7 +149,7 @@ export const demoInventory: InventoryItem[] = [
   {
     id: "inv-mushroom",
     ingredientId: "mushroom",
-    name: "Mushroom",
+    name: "เห็ด",
     category: "Vegetables",
     quantity: 180,
     unit: "g",
@@ -353,7 +162,7 @@ export const demoInventory: InventoryItem[] = [
 export const demoShopping: ShoppingItem[] = [
   {
     id: "shop-1",
-    name: "Wholegrain bread",
+    name: "ขนมปังโฮลเกรน",
     quantity: 1,
     unit: "packs",
     isPurchased: false,
@@ -363,9 +172,9 @@ export const demoHistory: HistoryItem[] = [
   {
     id: "hist-1",
     recipeId: "tomato-pasta",
-    recipeName: "Tomato pasta",
+    recipeName: "มะเขือเทศ pasta",
     cookedAt: day(-2) + "T19:30:00Z",
     servings: 2,
-    summary: { Pasta: 200, Tomato: 300 },
+    summary: { พาสต้า: 200, มะเขือเทศ: 300 },
   },
 ];

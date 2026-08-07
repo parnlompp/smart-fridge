@@ -14,6 +14,8 @@ import {
 } from "@tabler/icons-react";
 import { useDemo } from "@/components/demo-provider";
 import { createShoppingItems } from "@/lib/business/shopping-list";
+import { dietLabel, difficultyLabel, unitLabel } from "@/lib/thai-labels";
+import type { Unit } from "@/lib/types";
 export default function RecipeDetail() {
   const { id } = useParams<{ id: string }>();
   const { analyses, addShopping, cook } = useDemo();
@@ -25,12 +27,12 @@ export default function RecipeDetail() {
   if (!analysis)
     return (
       <div className="page">
-        <h1 className="text-2xl font-bold">Recipe unavailable</h1>
+        <h1 className="text-2xl font-bold">ไม่สามารถเปิดสูตรอาหารนี้ได้</h1>
         <p className="mt-2">
-          It may conflict with the active allergy or dietary profile.
+          สูตรนี้อาจขัดกับข้อมูลการแพ้อาหารหรือรูปแบบอาหารของคุณ
         </p>
         <Link href="/recipes" className="btn btn-secondary mt-5">
-          Back to recipes
+          กลับไปหน้าสูตรอาหาร
         </Link>
       </div>
     );
@@ -40,8 +42,8 @@ export default function RecipeDetail() {
     const result = cook(id, servings);
     setNotice(
       result.ok
-        ? "Success — inventory was updated and cooking history recorded."
-        : `Nothing was deducted. Insufficient: ${result.insufficient.map((x) => `${x.name} (need ${x.needed}${x.unit}, have ${x.available}${x.unit})`).join(", ")}`,
+        ? "สำเร็จ อัปเดตคลังวัตถุดิบและบันทึกประวัติการทำอาหารแล้ว"
+        : `ไม่ได้หักวัตถุดิบ เนื่องจากมีไม่เพียงพอ: ${result.insufficient.map((x) => `${x.name} (ต้องใช้ ${x.needed}${unitLabel[x.unit as Unit]} มี ${x.available}${unitLabel[x.unit as Unit]})`).join(", ")}`,
     );
   }
   return (
@@ -51,7 +53,7 @@ export default function RecipeDetail() {
         className="mb-6 inline-flex items-center gap-1 text-sm font-bold text-[#507064]"
       >
         <IconChevronLeft size={17} />
-        All recipes
+        สูตรอาหารทั้งหมด
       </Link>
       <div className="grid gap-7 lg:grid-cols-[.9fr_1.1fr]">
         <div className="card grid min-h-[340px] place-items-center bg-[#e2ecdc] text-9xl">
@@ -59,12 +61,34 @@ export default function RecipeDetail() {
         </div>
         <div className="py-3">
           <div className="flex flex-wrap gap-2">
+            <span className="badge bg-[#173f31] text-white">
+              {Math.round(analysis.score)} / 100 คะแนนสูตรอาหาร
+            </span>
             <span className="badge bg-[#dcebdd] text-[#286249]">
-              {analysis.percentage}% ingredient match
+              {analysis.percentage}% วัตถุดิบตรงกัน
             </span>
             <span className="badge bg-slate-100 text-slate-600">
-              {recipe.dietaryCategory}
+              {dietLabel[recipe.dietaryCategory]}
             </span>
+            {recipe.source?.reviewStatus === "unreviewed" && (
+              <span className="badge bg-amber-100 text-amber-800">
+                รอตรวจสอบข้อมูลโภชนาการและข้อจำกัดอาหาร
+              </span>
+            )}
+          </div>
+          <div className="mt-4 grid max-w-xl grid-cols-3 gap-2 text-center text-xs">
+            <div className="rounded-xl bg-orange-50 p-3 text-orange-800">
+              <b className="block text-base">{analysis.expiryPriorityPoints}</b>
+              วันหมดอายุ / 50
+            </div>
+            <div className="rounded-xl bg-emerald-50 p-3 text-emerald-800">
+              <b className="block text-base">{analysis.quantityMatchPoints}</b>
+              วัตถุดิบ / 30
+            </div>
+            <div className="rounded-xl bg-purple-50 p-3 text-purple-800">
+              <b className="block text-base">{analysis.preferencePoints}</b>
+              ความชอบ / 20
+            </div>
           </div>
           <h1 className="mt-5 text-4xl font-black tracking-[-.04em]">
             {recipe.name}
@@ -75,15 +99,15 @@ export default function RecipeDetail() {
           <div className="mt-6 flex gap-6 text-sm font-bold">
             <span className="flex gap-2">
               <IconClock size={19} />
-              {recipe.preparationTime} min
+              {recipe.preparationTime} นาที
             </span>
-            <span>{recipe.difficulty}</span>
+            <span>{difficultyLabel[recipe.difficulty]}</span>
           </div>
           <div className="mt-8 flex items-center gap-4">
-            <span className="text-sm font-bold">Servings</span>
+            <span className="text-sm font-bold">จำนวนที่เสิร์ฟ</span>
             <div className="flex items-center rounded-xl border bg-white">
               <button
-                aria-label="Decrease servings"
+                aria-label="ลดจำนวนที่เสิร์ฟ"
                 className="p-3"
                 onClick={() => setServings(Math.max(1, servings - 1))}
               >
@@ -91,7 +115,7 @@ export default function RecipeDetail() {
               </button>
               <b className="w-8 text-center">{servings}</b>
               <button
-                aria-label="Increase servings"
+                aria-label="เพิ่มจำนวนที่เสิร์ฟ"
                 className="p-3"
                 onClick={() => setServings(servings + 1)}
               >
@@ -101,7 +125,7 @@ export default function RecipeDetail() {
           </div>
           <div className="mt-7 flex flex-wrap gap-3">
             <button className="btn btn-primary" onClick={confirmCook}>
-              I cooked this
+              ฉันทำเมนูนี้แล้ว
             </button>
             {analysis.missing.length > 0 && (
               <button
@@ -116,18 +140,18 @@ export default function RecipeDetail() {
                       recipe.id,
                     ),
                   );
-                  setNotice("Missing ingredients added to your shopping list.");
+                  setNotice("เพิ่มวัตถุดิบที่ขาดลงในรายการซื้อของแล้ว");
                 }}
               >
                 <IconShoppingCart size={18} />
-                Add missing items
+                เพิ่มวัตถุดิบที่ขาด
               </button>
             )}
           </div>
           {notice && (
             <p
               role="status"
-              className={`mt-4 rounded-xl p-4 text-sm font-semibold ${notice.startsWith("Success") || notice.startsWith("Missing") ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-800"}`}
+              className={`mt-4 rounded-xl p-4 text-sm font-semibold ${notice.startsWith("สำเร็จ") || notice.startsWith("เพิ่ม") ? "bg-emerald-50 text-emerald-800" : "bg-red-50 text-red-800"}`}
             >
               {notice}
             </p>
@@ -136,7 +160,7 @@ export default function RecipeDetail() {
       </div>
       <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_.8fr]">
         <section className="card p-6">
-          <h2 className="text-xl font-extrabold">Ingredients</h2>
+          <h2 className="text-xl font-extrabold">วัตถุดิบ</h2>
           <div className="mt-5 space-y-2">
             {recipe.ingredients.map((item) => {
               const missing = analysis.missing.some(
@@ -165,17 +189,17 @@ export default function RecipeDetail() {
                     <b className="text-sm">{item.name}</b>
                     {soon && (
                       <span className="block text-xs font-semibold text-amber-700">
-                        Use soon
+                        ควรใช้เร็ว ๆ นี้
                       </span>
                     )}
                     {item.isOptional && (
                       <span className="block text-xs text-slate-500">
-                        Optional
+                        ไม่บังคับ
                       </span>
                     )}
                   </div>
                   <span className="text-sm font-semibold">
-                    {item.requiredQuantity * scale} {item.unit}
+                    {item.requiredQuantity * scale} {unitLabel[item.unit]}
                   </span>
                 </div>
               );
@@ -183,7 +207,7 @@ export default function RecipeDetail() {
           </div>
         </section>
         <section className="card p-6">
-          <h2 className="text-xl font-extrabold">Method</h2>
+          <h2 className="text-xl font-extrabold">วิธีทำ</h2>
           <ol className="mt-5 space-y-5">
             {recipe.instructions.map((step, i) => (
               <li className="flex gap-4 text-sm leading-6" key={step}>

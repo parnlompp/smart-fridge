@@ -7,6 +7,7 @@ import { ingredients } from "@/lib/demo-data";
 import { estimateExpiry } from "@/lib/business/expiry";
 import { inventorySchema } from "@/lib/schemas/inventory";
 import type { InventoryItem, StorageLocation, Unit } from "@/lib/types";
+import { categoryLabel, storageLabel, unitLabel } from "@/lib/thai-labels";
 export function InventoryForm({ item }: { item?: InventoryItem }) {
   const { addInventory, updateInventory } = useDemo();
   const router = useRouter();
@@ -67,22 +68,22 @@ export function InventoryForm({ item }: { item?: InventoryItem }) {
     <form onSubmit={submit} className="card max-w-3xl p-6 md:p-8">
       <div className="grid gap-5 md:grid-cols-2">
         <label>
-          <span className="label">Ingredient *</span>
+          <span className="label">วัตถุดิบ *</span>
           <select
             name="ingredientId"
             defaultValue={item?.ingredientId ?? ""}
             className="input"
           >
-            <option value="">Select ingredient</option>
+            <option value="">เลือกวัตถุดิบ</option>
             {ingredients.map((i) => (
               <option key={i.id} value={i.id}>
-                {i.name} · {i.category}
+                {i.name} · {categoryLabel[i.category] ?? i.category}
               </option>
             ))}
           </select>
         </label>
         <label>
-          <span className="label">Quantity *</span>
+          <span className="label">ปริมาณ *</span>
           <input
             name="quantity"
             type="number"
@@ -90,35 +91,43 @@ export function InventoryForm({ item }: { item?: InventoryItem }) {
             step="0.01"
             defaultValue={item?.quantity}
             className="input"
-            placeholder="e.g. 250"
+            placeholder="เช่น 250"
           />
         </label>
         <label>
-          <span className="label">Unit *</span>
+          <span className="label">หน่วย *</span>
           <select
             name="unit"
             defaultValue={item?.unit ?? "g"}
             className="input"
           >
-            {["g", "kg", "ml", "L", "pieces", "packs", "cans"].map((x) => (
-              <option key={x}>{x}</option>
-            ))}
+            {(["g", "kg", "ml", "L", "pieces", "packs", "cans"] as Unit[]).map(
+              (value) => (
+                <option key={value} value={value}>
+                  {unitLabel[value]}
+                </option>
+              ),
+            )}
           </select>
         </label>
         <label>
-          <span className="label">Storage location *</span>
+          <span className="label">ตำแหน่งจัดเก็บ *</span>
           <select
             name="storageLocation"
             defaultValue={item?.storageLocation ?? "Refrigerator"}
             className="input"
           >
-            <option>Refrigerator</option>
-            <option>Freezer</option>
-            <option>Pantry</option>
+            {(["Refrigerator", "Freezer", "Pantry"] as StorageLocation[]).map(
+              (value) => (
+                <option key={value} value={value}>
+                  {storageLabel[value]}
+                </option>
+              ),
+            )}
           </select>
         </label>
         <label>
-          <span className="label">Added date *</span>
+          <span className="label">วันที่เพิ่ม *</span>
           <input
             name="addedDate"
             type="date"
@@ -127,7 +136,7 @@ export function InventoryForm({ item }: { item?: InventoryItem }) {
           />
         </label>
         <div>
-          <span className="label">Expiry date</span>
+          <span className="label">วันหมดอายุ</span>
           {!estimating && (
             <input
               name="expiryDate"
@@ -142,26 +151,27 @@ export function InventoryForm({ item }: { item?: InventoryItem }) {
               checked={estimating}
               onChange={(e) => setEstimating(e.target.checked)}
             />{" "}
-            I don’t know—estimate it
+            ไม่ทราบ ให้ระบบประมาณวันหมดอายุ
           </label>
         </div>
         <label className="md:col-span-2">
           <span className="label">
-            Notes <span className="font-normal text-slate-400">(optional)</span>
+            หมายเหตุ{" "}
+            <span className="font-normal text-slate-400">(ไม่บังคับ)</span>
           </span>
           <textarea
             name="notes"
             maxLength={300}
             defaultValue={item?.notes}
             className="input min-h-24"
-            placeholder="Package opened, meal plan notes…"
+            placeholder="เช่น เปิดบรรจุภัณฑ์แล้ว หรือหมายเหตุสำหรับวางแผนมื้ออาหาร"
           />
         </label>
       </div>
       {estimating && (
         <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-          <b>Estimate only:</b> This expiry date is an estimate only and does
-          not guarantee food safety.
+          <b>เป็นเพียงการประมาณ:</b> วันหมดอายุนี้เป็นเพียงค่าประมาณและ
+          ไม่สามารถรับประกันความปลอดภัยของอาหารได้
         </div>
       )}
       {error && (
@@ -174,7 +184,11 @@ export function InventoryForm({ item }: { item?: InventoryItem }) {
       )}
       <div className="mt-7 flex gap-3">
         <button disabled={saving} className="btn btn-primary">
-          {saving ? "Saving…" : item ? "Save changes" : "Add to inventory"}
+          {saving
+            ? "กำลังบันทึก..."
+            : item
+              ? "บันทึกการเปลี่ยนแปลง"
+              : "เพิ่มลงในคลังวัตถุดิบ"}
         </button>
         <button
           type="button"
