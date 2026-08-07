@@ -9,7 +9,7 @@ export function Logo({ light = false }: { light?: boolean }) {
         🌿
       </span>
       <span className={light ? "text-white" : "text-[#17352b]"}>
-        smart fridge
+        ตู้เย็นอัจฉริยะ
       </span>
     </Link>
   );

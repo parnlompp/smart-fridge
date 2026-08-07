@@ -16,11 +16,11 @@ export default function AuthLayout({
         <div className="max-w-md">
           <div className="text-8xl">🥬</div>
           <blockquote className="mt-8 text-3xl font-extrabold leading-tight tracking-tight">
-            “Dinner starts with what you already have.”
+            “มื้ออาหารเริ่มต้นจากสิ่งที่คุณมีอยู่แล้ว”
           </blockquote>
           <p className="mt-4 leading-7 text-[#617068]">
-            Track freshness, discover safer recipes, and make every ingredient
-            count.
+            ติดตามความสดใหม่ ค้นหาสูตรที่ปลอดภัยกว่า
+            และใช้วัตถุดิบทุกอย่างให้คุ้มค่า
           </p>
         </div>
       </aside>

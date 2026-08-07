@@ -12,6 +12,25 @@ export function isDietCompatible(
     return ["Pescatarian", "Vegetarian", "Vegan"].includes(
       recipe.dietaryCategory,
     );
-  if (preference === "Halal") return recipe.dietaryCategory !== "Other";
+  if (preference === "Halal")
+    return ["Halal", "Vegetarian", "Vegan", "Pescatarian"].includes(
+      recipe.dietaryCategory,
+    );
+  return true;
+}
+
+export function isReligiousRestrictionCompatible(
+  recipe: Recipe,
+  restriction?: string,
+) {
+  const normalized = restriction?.trim().toLowerCase();
+  if (!normalized) return true;
+  if (["halal", "islam", "islamic", "muslim"].includes(normalized)) {
+    return ["Halal", "Vegetarian", "Vegan", "Pescatarian"].includes(
+      recipe.dietaryCategory,
+    );
+  }
+  // Other free-text restrictions need explicit recipe metadata before the app
+  // can safely claim compatibility.
   return true;
 }

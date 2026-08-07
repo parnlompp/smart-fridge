@@ -41,8 +41,14 @@ export interface Recipe {
   difficulty: "Easy" | "Medium";
   defaultServings: number;
   dietaryCategory: DietaryPreference | "Vegetarian";
+  healthGoals?: string[];
   emoji: string;
   ingredients: RecipeIngredient[];
+  source?: {
+    dataset: string;
+    rowIndex: number;
+    reviewStatus: "unreviewed" | "reviewed";
+  };
 }
 export interface Profile {
   displayName: string;
@@ -76,5 +82,11 @@ export interface RecipeAnalysis {
   totalRequired: number;
   missing: RecipeIngredient[];
   nearExpiry: RecipeIngredient[];
+  expiryPriorityScore: number;
+  quantityMatchScore: number;
+  preferenceScore: number;
+  expiryPriorityPoints: number;
+  quantityMatchPoints: number;
+  preferencePoints: number;
   score: number;
 }

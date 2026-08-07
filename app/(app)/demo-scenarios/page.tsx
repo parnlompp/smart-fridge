@@ -3,107 +3,109 @@ import { IconCheck, IconRefresh } from "@tabler/icons-react";
 import { PageHeading } from "@/components/page-heading";
 import { useDemo } from "@/components/demo-provider";
 import { validateNewAllergy } from "@/lib/business/allergies";
-import { exclusionReasons } from "@/lib/business/filtering";
+import { exclusionReasons, recipeAllergens } from "@/lib/business/filtering";
 import { recipes } from "@/lib/demo-data";
 export default function Scenarios() {
   const { analyses, profile, inventory, reset } = useDemo();
-  const peanut = recipes.find((r) => r.id === "peanut-noodle")!;
+  const peanut = recipes.find((recipe) =>
+    recipeAllergens(recipe).includes("Peanuts"),
+  )!;
   const scenarios = [
     [
       "DS-01",
-      "Estimate an unknown expiry",
-      "Added date + category + storage",
-      "An estimated date and safety disclaimer",
-      "Expiry form provides configured estimate",
-      "Pass",
+      "ประมาณวันหมดอายุที่ไม่ทราบ",
+      "วันที่เพิ่ม + หมวดหมู่ + ตำแหน่งจัดเก็บ",
+      "วันที่โดยประมาณและคำเตือนความปลอดภัย",
+      "แบบฟอร์มแสดงวันที่ประมาณตามกฎที่ตั้งไว้",
+      "ผ่าน",
     ],
     [
       "DS-02",
-      "Reject blank custom allergy",
-      "Whitespace only",
-      "Validation error",
+      "ไม่รับข้อมูลอาหารที่แพ้แบบว่าง",
+      "มีเพียงช่องว่าง",
+      "แสดงข้อผิดพลาดการตรวจสอบ",
       validateNewAllergy("   ", profile.allergies).ok
-        ? "Accepted"
-        : "Rejected with clear feedback",
-      "Pass",
+        ? "ยอมรับ"
+        : "ปฏิเสธพร้อมข้อความอธิบาย",
+      "ผ่าน",
     ],
     [
       "DS-03",
-      "Reject duplicate allergy",
+      "ไม่รับข้อมูลอาหารที่แพ้ซ้ำ",
       " peanuts ",
-      "Duplicate rejected",
+      "ปฏิเสธรายการซ้ำ",
       validateNewAllergy(" peanuts ", profile.allergies).ok
-        ? "Accepted"
-        : "Normalised duplicate rejected",
-      "Pass",
+        ? "ยอมรับ"
+        : "ปฏิเสธรายการซ้ำหลังปรับรูปแบบข้อความ",
+      "ผ่าน",
     ],
     [
       "DS-04",
-      "Exclude peanut recipe",
-      "Alex: Peanuts allergy",
-      "Recipe excluded",
+      "คัดสูตรที่มีถั่วลิสงออก",
+      "Alex: แพ้ถั่วลิสง",
+      "สูตรอาหารถูกคัดออก",
       exclusionReasons(
         peanut,
         profile.allergies,
         profile.dietaryPreference,
       ).join(", "),
-      "Pass",
+      "ผ่าน",
     ],
     [
       "DS-05",
-      "Prioritise near-expiry food",
-      "Chicken, broccoli and mushroom expire soon",
-      "Relevant high-match recipes boosted",
+      "ให้ความสำคัญกับอาหารใกล้หมดอายุ",
+      "ไก่ บรอกโคลี และเห็ดใกล้หมดอายุ",
+      "สูตรที่ตรงและช่วยใช้วัตถุดิบได้รับคะแนนสูงขึ้น",
       analyses[0]?.recipe.name,
-      "Pass",
+      "ผ่าน",
     ],
     [
       "DS-06",
-      "Show varied match levels",
-      "Current demo inventory",
-      "100%, partial and low matches",
-      `${Math.max(...analyses.map((a) => a.percentage))}% high · ${analyses.filter((a) => a.percentage < 100).length} partial/low`,
-      "Pass",
+      "แสดงระดับความตรงกันหลายระดับ",
+      "คลังวัตถุดิบสาธิตปัจจุบัน",
+      "ตรงกัน 100% บางส่วน และระดับต่ำ",
+      `สูงสุด ${Math.max(...analyses.map((a) => a.percentage))}% · ตรงกันบางส่วน/ต่ำ ${analyses.filter((a) => a.percentage < 100).length} สูตร`,
+      "ผ่าน",
     ],
     [
       "DS-07",
-      "Prevent insufficient cooking",
-      "Select more servings than stock supports",
-      "No inventory deduction",
-      "Atomic validator lists every shortage",
-      "Pass",
+      "ป้องกันการปรุงเมื่อวัตถุดิบไม่พอ",
+      "เลือกจำนวนเสิร์ฟมากกว่าวัตถุดิบที่มี",
+      "ไม่หักวัตถุดิบ",
+      "ระบบแสดงวัตถุดิบที่ขาดทั้งหมด",
+      "ผ่าน",
     ],
     [
       "DS-08",
-      "Cook and deduct",
-      "Valid recipe quantities",
-      "Deduct and record history together",
-      "Available from recipe detail",
-      "Pass",
+      "ปรุงอาหารและหักวัตถุดิบ",
+      "ปริมาณตามสูตรถูกต้อง",
+      "หักวัตถุดิบและบันทึกประวัติพร้อมกัน",
+      "ใช้งานได้จากหน้ารายละเอียดสูตร",
+      "ผ่าน",
     ],
     [
       "DS-09",
-      "Separate household data",
-      "User A requests User B record",
-      "RLS blocks access",
-      "Policies bind rows to auth.uid()",
-      "Pass",
+      "แยกข้อมูลแต่ละครัวเรือน",
+      "ผู้ใช้ A ขอข้อมูลของผู้ใช้ B",
+      "RLS ป้องกันการเข้าถึง",
+      "นโยบายผูกข้อมูลกับ auth.uid()",
+      "ผ่าน",
     ],
     [
       "DS-10",
-      "Reset demo data",
-      "Modified local demo state",
-      "Restore Alex seed",
-      `${inventory.length} current items · reset available`,
-      "Pass",
+      "รีเซ็ตข้อมูลสาธิต",
+      "ข้อมูลสาธิตในเครื่องถูกแก้ไข",
+      "คืนค่าข้อมูลเริ่มต้นของ Alex",
+      `มี ${inventory.length} รายการ · สามารถรีเซ็ตได้`,
+      "ผ่าน",
     ],
   ];
   return (
     <div className="page">
       <PageHeading
-        eyebrow="Presentation mode"
-        title="Demo scenarios"
-        description="A traceable checklist connecting requirements to observable outcomes."
+        eyebrow="โหมดนำเสนอ"
+        title="สถานการณ์ทดสอบ"
+        description="รายการตรวจสอบที่เชื่อมโยงข้อกำหนดกับผลลัพธ์ที่สังเกตได้"
         action={
           <button
             onClick={() => {
@@ -113,7 +115,7 @@ export default function Scenarios() {
             className="btn btn-secondary"
           >
             <IconRefresh size={18} />
-            Reset demo data
+            รีเซ็ตข้อมูลสาธิต
           </button>
         }
       />
@@ -122,11 +124,11 @@ export default function Scenarios() {
           <thead className="bg-[#f2f5ef] text-xs uppercase tracking-wider text-[#69776f]">
             <tr>
               {[
-                "ID / Objective",
-                "Input",
-                "Expected result",
-                "Actual result",
-                "Status",
+                "รหัส / วัตถุประสงค์",
+                "ข้อมูลนำเข้า",
+                "ผลลัพธ์ที่คาดหวัง",
+                "ผลลัพธ์จริง",
+                "สถานะ",
               ].map((h) => (
                 <th className="p-4" key={h}>
                   {h}
@@ -158,9 +160,8 @@ export default function Scenarios() {
         </table>
       </div>
       <p className="mt-4 text-xs leading-5 text-slate-500">
-        Scenario statuses describe deterministic domain checks included in the
-        automated test suite. Supabase RLS verification requires the integration
-        steps in docs/test-cases.md.
+        สถานการณ์เหล่านี้แสดงการตรวจสอบกฎของระบบที่อยู่ในชุดทดสอบอัตโนมัติ
+        ส่วนการตรวจสอบ Supabase RLS ต้องทำตามขั้นตอนใน docs/test-cases.md
       </p>
     </div>
   );

@@ -1,10 +1,12 @@
 # Business rules
 
 - Allergy names are trimmed, internal whitespace is collapsed, and comparisons are case-insensitive. Blank or duplicate names are rejected.
-- Allergen filtering runs before dietary filtering; excluded recipes never enter ordinary recommendations.
+- Allergen, dietary, and recognized religious filtering runs before scoring; excluded recipes never enter ordinary recommendations. The Halal dietary preference and Halal/Islam/Muslim religious restrictions only allow recipes marked Halal or belonging to vegetarian, vegan, or pescatarian categories. Other free-text religious restrictions require explicit recipe metadata before compatibility can be claimed.
 - Expired means before today; today is distinct; “soon” means 1–3 days; fresh means more than 3 days. Estimated status is an overlay, never a safety claim.
 - Recommendation match is required ingredients present / total required ingredients. Optional ingredients do not affect the denominator, and expired stock is unavailable.
-- Ranking score is `match + (near expiry × 4) - (missing × 8) - (minutes × 0.03)`. Match remains dominant.
+- Recipe score is `(expiry priority × 50%) + (ingredient match × 30%) + (preference × 20%)`.
+- Expiry priority averages the earliest usable lot for each owned recipe ingredient: today is 100, one day is 90, decreasing by 10 per day to zero. A recipe with no owned ingredients receives zero for this factor.
+- Preference is 100 when diet and health goal both match, 80 when either matches, and 60 when a recipe remains suitable without a preference match.
 - Cooking scales quantities by selected/default servings. All required ingredients must have matching units and sufficient non-expired stock.
 - Production cooking locks inventory rows and validates all shortages before changing any quantity. It consumes earliest-expiring stock first and records history in the same transaction.
 - Zero-balance inventory rows are deleted. Negative balances are impossible through constraints and transaction logic.

@@ -12,18 +12,18 @@ export default function Home() {
   const values = [
     {
       Icon: IconFridge,
-      title: "Track ingredients",
-      text: "Keep quantities, storage locations and expiry dates organised in one calm view.",
+      title: "จัดการวัตถุดิบ",
+      text: "ดูปริมาณ ตำแหน่งจัดเก็บ และวันหมดอายุได้อย่างเป็นระเบียบในหน้าเดียว",
     },
     {
       Icon: IconLeaf,
-      title: "Reduce food waste",
-      text: "See what needs attention and prioritise ingredients before they go to waste.",
+      title: "ลดขยะอาหาร",
+      text: "รู้ว่าวัตถุดิบใดควรใช้ก่อน เพื่อไม่ให้อาหารต้องถูกทิ้งโดยเปล่าประโยชน์",
     },
     {
       Icon: IconChefHat,
-      title: "Discover suitable recipes",
-      text: "Get ranked ideas based on your fridge, allergies and dietary preferences.",
+      title: "ค้นหาสูตรที่เหมาะกับคุณ",
+      text: "รับคำแนะนำสูตรอาหารจากวัตถุดิบ อาการแพ้ และรูปแบบอาหารของคุณ",
     },
   ];
   return (
@@ -31,48 +31,49 @@ export default function Home() {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
         <Logo />
         <Link href="/login" className="btn btn-secondary">
-          Sign in
+          เข้าสู่ระบบ
         </Link>
       </nav>
       <section className="hero-grid mx-auto grid max-w-7xl items-center gap-12 overflow-hidden rounded-[32px] border border-[#dce3d9] bg-[#fffdf8] px-7 py-16 md:grid-cols-2 md:px-16 md:py-24">
         <div>
           <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-[#e1eedf] px-3 py-2 text-xs font-bold text-[#246445]">
-            <IconSparkles size={15} /> Your kitchen, thoughtfully organised
+            <IconSparkles size={15} /> จัดการครัวของคุณอย่างชาญฉลาด
           </div>
           <h1 className="max-w-xl text-5xl font-black leading-[1.02] tracking-[-.055em] text-[#17352b] md:text-7xl">
-            Cook smarter.
+            ทำอาหารให้ฉลาดขึ้น
             <br />
-            <span className="text-[#4b845f]">Waste less.</span>
+            <span className="text-[#4b845f]">ลดขยะให้น้อยลง</span>
           </h1>
           <p className="mt-7 max-w-lg text-lg leading-8 text-[#5e6e66]">
-            Know what you have, use what expires first, and discover recipes
-            that respect your dietary needs.
+            รู้ว่าคุณมีอะไร ใช้วัตถุดิบที่ใกล้หมดอายุก่อน และค้นหาสูตรอาหาร
+            ที่เหมาะกับข้อจำกัดของคุณ
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link href="/api/demo-session" className="btn btn-primary px-6">
-              Start demo <IconArrowRight size={18} />
+              ทดลองใช้งาน <IconArrowRight size={18} />
             </Link>
             <Link href="/login" className="btn btn-secondary px-6">
-              Sign in
+              เข้าสู่ระบบ
             </Link>
           </div>
           <p className="mt-5 flex items-center gap-2 text-xs text-[#66736c]">
-            <IconShieldCheck size={16} /> Demo data stays in your browser
+            <IconShieldCheck size={16} />{" "}
+            ข้อมูลสาธิตจะเก็บอยู่ในเบราว์เซอร์ของคุณ
           </p>
         </div>
         <div className="relative mx-auto w-full max-w-md">
           <div className="card rotate-2 bg-[#174e3b] p-5 text-white shadow-2xl">
             <div className="mb-10 flex items-center justify-between">
-              <span className="text-sm font-bold">Today in your fridge</span>
+              <span className="text-sm font-bold">วัตถุดิบในตู้เย็นวันนี้</span>
               <span className="rounded-full bg-white/15 px-3 py-1 text-xs">
-                3 need attention
+                ควรตรวจสอบ 3 รายการ
               </span>
             </div>
             <div className="space-y-3">
               {[
-                ["🥦", "Broccoli", "2 days"],
-                ["🍗", "Chicken breast", "Tomorrow"],
-                ["🍄", "Mushrooms", "2 days"],
+                ["🥦", "บรอกโคลี", "2 วัน"],
+                ["🍗", "อกไก่", "พรุ่งนี้"],
+                ["🍄", "เห็ด", "2 วัน"],
               ].map((x) => (
                 <div
                   key={x[1]}
@@ -81,7 +82,9 @@ export default function Home() {
                   <span className="text-3xl">{x[0]}</span>
                   <div className="flex-1">
                     <b className="block text-sm">{x[1]}</b>
-                    <span className="text-xs text-white/60">Use soon</span>
+                    <span className="text-xs text-white/60">
+                      ควรใช้เร็ว ๆ นี้
+                    </span>
                   </div>
                   <b className="text-xs text-amber-200">{x[2]}</b>
                 </div>
@@ -89,10 +92,10 @@ export default function Home() {
             </div>
             <div className="mt-5 rounded-2xl bg-[#e3edcf] p-4 text-[#17352b]">
               <p className="text-xs font-bold uppercase tracking-wider">
-                Best match
+                สูตรที่ตรงที่สุด
               </p>
               <div className="mt-2 flex items-center justify-between">
-                <b>Chicken stir-fry</b>
+                <b>ไก่ผัดผัก</b>
                 <span className="rounded-full bg-[#174e3b] px-3 py-1 text-xs text-white">
                   100%
                 </span>
@@ -103,7 +106,7 @@ export default function Home() {
       </section>
       <section className="mx-auto max-w-7xl px-6 py-20">
         <p className="text-center text-xs font-extrabold uppercase tracking-[.2em] text-[#4b845f]">
-          Less guessing. More good food.
+          คาดเดาน้อยลง อิ่มอร่อยมากขึ้น
         </p>
         <div className="mt-8 grid gap-5 md:grid-cols-3">
           {values.map(({ Icon, title, text }) => (

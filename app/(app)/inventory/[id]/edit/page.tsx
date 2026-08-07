@@ -10,14 +10,10 @@ export default function EditInventory() {
   return (
     <div className="page">
       <PageHeading
-        eyebrow="Inventory"
-        title={item ? `Edit ${item.name}` : "Ingredient not found"}
+        eyebrow="คลังวัตถุดิบ"
+        title={item ? `แก้ไข ${item.name}` : "ไม่พบวัตถุดิบ"}
       />
-      {item ? (
-        <InventoryForm item={item} />
-      ) : (
-        <p>This item may have been removed.</p>
-      )}
+      {item ? <InventoryForm item={item} /> : <p>รายการนี้อาจถูกลบไปแล้ว</p>}
     </div>
   );
 }

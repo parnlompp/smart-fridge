@@ -4,9 +4,9 @@ export default function NewInventory() {
   return (
     <div className="page">
       <PageHeading
-        eyebrow="Inventory"
-        title="Add an ingredient"
-        description="Enter a date from the package, or let Smart Fridge make a conservative estimate."
+        eyebrow="คลังวัตถุดิบ"
+        title="เพิ่มวัตถุดิบ"
+        description="กรอกวันที่จากบรรจุภัณฑ์ หรือให้ระบบประมาณวันหมดอายุอย่างระมัดระวัง"
       />
       <InventoryForm />
     </div>

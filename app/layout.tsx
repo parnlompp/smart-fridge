@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Smart Fridge",
-  description: "Cook smarter. Waste less.",
+  title: "ตู้เย็นอัจฉริยะ",
+  description: "ทำอาหารอย่างฉลาด ลดขยะอาหาร",
 };
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="th">
       <body>{children}</body>
     </html>
   );

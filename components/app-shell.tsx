@@ -16,13 +16,13 @@ import { Logo } from "./logo";
 import { DemoProvider, useDemo } from "./demo-provider";
 import { getExpiryStatus } from "@/lib/business/expiry";
 const nav = [
-  ["/dashboard", "Dashboard", IconLayoutDashboard],
-  ["/inventory", "Inventory", IconFridge],
-  ["/recipes", "Recipes", IconChefHat],
-  ["/shopping-list", "Shopping List", IconShoppingCart],
-  ["/history", "History", IconHistory],
-  ["/profile", "Profile", IconUser],
-  ["/demo-scenarios", "Demo Scenarios", IconFlask],
+  ["/dashboard", "หน้าหลัก", IconLayoutDashboard],
+  ["/inventory", "วัตถุดิบ", IconFridge],
+  ["/recipes", "สูตรอาหาร", IconChefHat],
+  ["/shopping-list", "รายการซื้อของ", IconShoppingCart],
+  ["/history", "ประวัติ", IconHistory],
+  ["/profile", "โปรไฟล์", IconUser],
+  ["/demo-scenarios", "ทดสอบระบบ", IconFlask],
 ] as const;
 function Chrome({ children }: { children: React.ReactNode }) {
   const path = usePathname();
@@ -34,7 +34,7 @@ function Chrome({ children }: { children: React.ReactNode }) {
     <div className="shell">
       <aside className="sidebar">
         <Logo light />
-        <nav className="mt-10 space-y-1" aria-label="Main navigation">
+        <nav className="mt-10 space-y-1" aria-label="เมนูหลัก">
           {nav.map(([href, label, Icon]) => (
             <Link
               key={href}
@@ -53,14 +53,14 @@ function Chrome({ children }: { children: React.ReactNode }) {
             </span>
             <div>
               <p className="text-sm font-bold">{profile.displayName}</p>
-              <p className="text-xs text-white/60">Demo household</p>
+              <p className="text-xs text-white/60">ครัวเรือนสาธิต</p>
             </div>
           </div>
           <Link
             href="/auth/signout"
             className="mt-4 flex items-center gap-2 text-xs text-white/60 hover:text-white"
           >
-            <IconLogout size={16} /> Sign out
+            <IconLogout size={16} /> ออกจากระบบ
           </Link>
         </div>
       </aside>
@@ -76,7 +76,7 @@ function Chrome({ children }: { children: React.ReactNode }) {
         </header>
         {children}
       </main>
-      <nav className="mobile-nav" aria-label="Mobile navigation">
+      <nav className="mobile-nav" aria-label="เมนูมือถือ">
         {nav.slice(0, 5).map(([href, label, Icon]) => (
           <Link
             key={href}
@@ -84,7 +84,7 @@ function Chrome({ children }: { children: React.ReactNode }) {
             className={`flex min-w-12 flex-col items-center gap-1 p-1 text-[10px] ${path.startsWith(href) ? "text-amber-300" : "text-white/70"}`}
           >
             <Icon size={20} />
-            {label.replace("Shopping List", "List")}
+            {label.replace("รายการซื้อของ", "ซื้อของ")}
           </Link>
         ))}
       </nav>

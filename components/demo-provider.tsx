@@ -4,7 +4,12 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { calculateDeduction } from "@/lib/business/deduction";
 import { filterRecipes } from "@/lib/business/filtering";
 import { calculateMatch, nearExpiryUsed } from "@/lib/business/matching";
-import { calculateRankScore, rankRecipes } from "@/lib/business/ranking";
+import {
+  calculateExpiryPriorityScore,
+  calculatePreferenceScore,
+  calculateRecipeScore,
+  rankRecipes,
+} from "@/lib/business/ranking";
 import {
   demoHistory,
   demoInventory,
@@ -41,7 +46,7 @@ interface DemoContextValue {
   reset: () => void;
 }
 const DemoContext = createContext<DemoContextValue | null>(null);
-const STORAGE_KEY = "smart-fridge-demo-v1";
+const STORAGE_KEY = "smart-fridge-demo-v3-th";
 
 export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfileState] = useState(demoProfile);
@@ -77,19 +82,28 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
           recipes,
           profile.allergies,
           profile.dietaryPreference,
+          profile.religiousRestriction,
         ).map((recipe) => {
           const match = calculateMatch(recipe, inventory);
           const nearExpiry = nearExpiryUsed(recipe, inventory);
+          const expiryPriorityScore = calculateExpiryPriorityScore(
+            recipe,
+            inventory,
+          );
+          const preferenceScore = calculatePreferenceScore(recipe, profile);
+          const score = calculateRecipeScore(
+            expiryPriorityScore,
+            match.percentage,
+            preferenceScore,
+          );
           return {
             recipe,
             ...match,
             nearExpiry,
-            score: calculateRankScore(
-              match.percentage,
-              nearExpiry.length,
-              match.missing.length,
-              recipe.preparationTime,
-            ),
+            expiryPriorityScore,
+            quantityMatchScore: match.percentage,
+            preferenceScore,
+            ...score,
           };
         }),
       ),

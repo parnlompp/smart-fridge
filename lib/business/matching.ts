@@ -27,7 +27,7 @@ export function calculateMatch(
   const percentage =
     required.length === 0
       ? 100
-      : Math.round((availableCount / required.length) * 100);
+      : Math.round((availableCount / required.length) * 10000) / 100;
   return {
     percentage,
     availableCount,

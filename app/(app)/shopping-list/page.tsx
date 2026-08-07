@@ -4,6 +4,7 @@ import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { useDemo } from "@/components/demo-provider";
 import { PageHeading } from "@/components/page-heading";
 import type { Unit } from "@/lib/types";
+import { unitLabel } from "@/lib/thai-labels";
 export default function Shopping() {
   const {
     shopping,
@@ -30,23 +31,23 @@ export default function Shopping() {
   return (
     <div className="page">
       <PageHeading
-        eyebrow="Plan ahead"
-        title="Shopping list"
-        description="Missing recipe ingredients and manual reminders, together in one place."
+        eyebrow="วางแผนล่วงหน้า"
+        title="รายการซื้อของ"
+        description="รวมวัตถุดิบที่ขาดและรายการที่คุณเพิ่มเองไว้ในที่เดียว"
         action={
           <button className="btn btn-secondary" onClick={clearCompleted}>
-            Clear completed
+            ล้างรายการที่ซื้อแล้ว
           </button>
         }
       />
       <form onSubmit={add} className="card mb-5 flex gap-3 p-4">
         <label className="flex-1">
-          <span className="sr-only">New shopping item</span>
+          <span className="sr-only">รายการซื้อของใหม่</span>
           <input
             className="input"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Add milk, apples, rice…"
+            placeholder="เพิ่มนม แอปเปิล ข้าว..."
           />
         </label>
         <button className="btn btn-primary">
@@ -66,7 +67,7 @@ export default function Shopping() {
                 type="checkbox"
                 checked={item.isPurchased}
                 onChange={() => toggleShopping(item.id)}
-                aria-label={`Mark ${item.name} purchased`}
+                aria-label={`ทำเครื่องหมายว่าซื้อ ${item.name} แล้ว`}
               />
               <div className="flex-1">
                 <p
@@ -75,14 +76,14 @@ export default function Shopping() {
                   {item.name}
                 </p>
                 <p className="mt-1 text-xs text-slate-500">
-                  {item.quantity} {item.unit}
+                  {item.quantity} {unitLabel[item.unit]}
                   {item.relatedRecipeId
-                    ? " · Added from recipe"
-                    : " · Manually added"}
+                    ? " · เพิ่มจากสูตรอาหาร"
+                    : " · เพิ่มด้วยตนเอง"}
                 </p>
               </div>
               <button
-                aria-label={`Delete ${item.name}`}
+                aria-label={`ลบ ${item.name}`}
                 className="rounded-lg p-2 text-red-700 hover:bg-red-50"
                 onClick={() => deleteShopping(item.id)}
               >
@@ -93,9 +94,9 @@ export default function Shopping() {
           {shopping.length === 0 && (
             <div className="py-12 text-center">
               <div className="text-5xl">🧺</div>
-              <h2 className="mt-4 font-bold">Your list is clear</h2>
+              <h2 className="mt-4 font-bold">รายการของคุณว่างอยู่</h2>
               <p className="mt-1 text-sm text-slate-500">
-                Missing recipe ingredients can be added here.
+                วัตถุดิบที่ขาดจากสูตรอาหารสามารถเพิ่มไว้ที่นี่
               </p>
             </div>
           )}

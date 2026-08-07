@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "import:thai-recipes": "node scripts/import-thai-recipes.mjs",
+    "generate:thai-supabase": "node scripts/generate-thai-supabase-migration.mjs",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:reset": "supabase db reset",
