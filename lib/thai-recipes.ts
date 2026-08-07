@@ -1,5 +1,10 @@
 import thaiFoodRows from "@/data/thai-food-v1.json";
-import type { Recipe, RecipeIngredient, Unit } from "@/lib/types";
+import type {
+  DietaryPreference,
+  Recipe,
+  RecipeIngredient,
+  Unit,
+} from "@/lib/types";
 
 interface ThaiFoodRow {
   rowIndex: number;
@@ -49,6 +54,69 @@ const inventoryIngredientRules: Array<[RegExp, string]> = [
   [/น้ำมันพืช|น้ำมันสำหรับทอด/, "oil"],
   [/กระเทียม|กะเทียม/, "garlic"],
 ];
+
+const prohibitedHalalPattern =
+  /หมู|สุกร|เบคอน|แฮม|กุนเชียง|ไส้กรอก|น้ำมันหมู|มันหมู|เลือด|เหล้า|ไวน์|บรั่นดี|เบียร์|เหล้ารัม/;
+const landAnimalPattern =
+  /ไก่|เป็ด|ห่าน|นก|เนื้อโค|เนื้อวัว|เนื้อควาย|เนื้อแพะ|เนื้อแกะ|กบ|ตับ|เครื่องใน|กระดูก|เนื้อสัตว์|เนื้อตามชอบ|เนื้อที่จะ/;
+const seafoodPattern = /ปลา|กุ้ง|ปู|หอย|ปลาหมึก|กะปิ|น้ำปลา|น้ำเคย|เคย|ไข่ปลา/;
+const vegetarianPattern =
+  /ไข่|นม(?!มะพร้าว)|เนย(?!ถั่ว)|ชีส|ครีม|โยเกิร์ต|น้ำผึ้ง/;
+
+type ThaiDietClassification = {
+  category: DietaryPreference;
+  reasons: string[];
+  halalCompatibility: "compatible" | "incompatible" | "needs-review";
+};
+
+export function classifyThaiRecipe(text: string): ThaiDietClassification {
+  const ingredientSection = text.match(
+    /##\s*เครื่องปรุง([\s\S]*?)(?:##\s*วิธีทำ|$)/,
+  )?.[1];
+  if (!ingredientSection) {
+    return {
+      category: "Other",
+      reasons: ["ไม่พบรายการเครื่องปรุงที่มีโครงสร้าง"],
+      halalCompatibility: "needs-review",
+    };
+  }
+
+  const hasProhibitedHalalIngredient =
+    prohibitedHalalPattern.test(ingredientSection);
+  const landAnimalText = ingredientSection.replace(
+    /ไข่(?:ไก่|เป็ด|นกกระทา)/g,
+    "ไข่",
+  );
+  const hasLandAnimal =
+    hasProhibitedHalalIngredient || landAnimalPattern.test(landAnimalText);
+  const hasSeafood = seafoodPattern.test(ingredientSection);
+  const hasEggDairyOrHoney = vegetarianPattern.test(ingredientSection);
+
+  let category: DietaryPreference = "Vegan";
+  const reasons: string[] = [];
+  if (hasLandAnimal) {
+    category = "No restriction";
+    reasons.push("พบเนื้อสัตว์บกหรือส่วนประกอบจากสัตว์");
+  } else if (hasSeafood) {
+    category = "Pescatarian";
+    reasons.push("พบปลาหรืออาหารทะเล แต่ไม่พบเนื้อสัตว์บก");
+  } else if (hasEggDairyOrHoney) {
+    category = "Vegetarian";
+    reasons.push("พบไข่ นม เนย หรือผลิตภัณฑ์จากสัตว์ที่ไม่ใช่เนื้อ");
+  } else {
+    reasons.push("ไม่พบเนื้อสัตว์ อาหารทะเล ไข่ นม หรือน้ำผึ้ง");
+  }
+
+  return {
+    category,
+    reasons,
+    halalCompatibility: hasProhibitedHalalIngredient
+      ? "incompatible"
+      : hasLandAnimal
+        ? "needs-review"
+        : "compatible",
+  };
+}
 
 const numericValue = (line: string) => {
   const mixed = line.match(/(\d+)\s+(\d+)\/(\d+)/);
@@ -125,21 +193,26 @@ function parseInstructions(text: string) {
 }
 
 export const thaiRecipes: Recipe[] = (thaiFoodRows as ThaiFoodRow[]).map(
-  (row) => ({
-    id: `thai-food-${row.rowIndex}`,
-    name: row.name,
-    description: "ตำรับอาหารไทยจากชุดข้อมูล PyThaiNLP thai_food_v1.0",
-    instructions: parseInstructions(row.text),
-    preparationTime: 30,
-    difficulty: "Easy",
-    defaultServings: 2,
-    dietaryCategory: "Other",
-    emoji: "🍲",
-    ingredients: parseIngredients(row.text, row.rowIndex),
-    source: {
-      dataset: "pythainlp/thai_food_v1.0",
-      rowIndex: row.rowIndex,
-      reviewStatus: "unreviewed",
-    },
-  }),
+  (row) => {
+    const classification = classifyThaiRecipe(row.text);
+    return {
+      id: `thai-food-${row.rowIndex}`,
+      name: row.name,
+      description: "ตำรับอาหารไทยจากชุดข้อมูล PyThaiNLP thai_food_v1.0",
+      instructions: parseInstructions(row.text),
+      preparationTime: 30,
+      difficulty: "Easy",
+      defaultServings: 2,
+      dietaryCategory: classification.category,
+      emoji: "🍲",
+      ingredients: parseIngredients(row.text, row.rowIndex),
+      source: {
+        dataset: "pythainlp/thai_food_v1.0",
+        rowIndex: row.rowIndex,
+        reviewStatus: "machine-classified",
+        classificationReasons: classification.reasons,
+        halalCompatibility: classification.halalCompatibility,
+      },
+    };
+  },
 );

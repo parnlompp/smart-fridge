@@ -47,7 +47,9 @@ export interface Recipe {
   source?: {
     dataset: string;
     rowIndex: number;
-    reviewStatus: "unreviewed" | "reviewed";
+    reviewStatus: "unreviewed" | "machine-classified" | "reviewed";
+    classificationReasons?: string[];
+    halalCompatibility?: "compatible" | "incompatible" | "needs-review";
   };
 }
 export interface Profile {

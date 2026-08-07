@@ -14,7 +14,7 @@ import {
 import { calculateDeduction } from "@/lib/business/deduction";
 import { filterRecipes, recipeAllergens } from "@/lib/business/filtering";
 import { demoInventory, recipes } from "@/lib/demo-data";
-import { thaiRecipes } from "@/lib/thai-recipes";
+import { classifyThaiRecipe, thaiRecipes } from "@/lib/thai-recipes";
 import type { InventoryItem, Recipe } from "@/lib/types";
 
 const today = new Date("2026-08-05T12:00:00Z");
@@ -297,21 +297,43 @@ describe("realistic demo fixture", () => {
     expect(recipes).toHaveLength(159);
     expect(recipes.every((recipe) => recipe.source?.dataset)).toBe(true);
   });
-  it("keeps every imported recipe unreviewed and diet-unknown", () =>
+  it("machine-classifies every imported recipe with a reason", () =>
     expect(
       thaiRecipes.every(
         (recipe) =>
-          recipe.source?.reviewStatus === "unreviewed" &&
-          recipe.dietaryCategory === "Other",
+          recipe.source?.reviewStatus === "machine-classified" &&
+          recipe.source.classificationReasons?.length,
       ),
     ).toBe(true));
-  it("omits unreviewed imports for restrictive diets", () => {
+  it("classifies the structured catalogue across dietary groups", () => {
+    const counts = thaiRecipes.reduce<Record<string, number>>(
+      (result, recipe) => {
+        result[recipe.dietaryCategory] =
+          (result[recipe.dietaryCategory] ?? 0) + 1;
+        return result;
+      },
+      {},
+    );
+    expect(counts).toEqual({
+      "No restriction": 84,
+      Pescatarian: 43,
+      Vegetarian: 7,
+      Other: 9,
+      Vegan: 16,
+    });
+  });
+  it("uses machine classifications for restrictive diets", () => {
+    const vegan = filterRecipes(thaiRecipes, [], "Vegan");
+    const halal = filterRecipes(thaiRecipes, [], "Halal");
+    expect(vegan).toHaveLength(16);
+    expect(vegan.every((recipe) => recipe.dietaryCategory === "Vegan")).toBe(
+      true,
+    );
     expect(
-      filterRecipes(thaiRecipes, [], "Halal").some((recipe) => recipe.source),
-    ).toBe(false);
-    expect(
-      filterRecipes(thaiRecipes, [], "Vegan").some((recipe) => recipe.source),
-    ).toBe(false);
+      halal.every(
+        (recipe) => recipe.source?.halalCompatibility === "compatible",
+      ),
+    ).toBe(true);
   });
   it("produces recommendations from seeded inventory", () =>
     expect(
@@ -321,4 +343,32 @@ describe("realistic demo fixture", () => {
     expect(
       recipes.some((r) => calculateMatch(r, demoInventory).percentage > 0),
     ).toBe(true));
+});
+
+describe("Thai dietary classification", () => {
+  const recipeText = (ingredient: string) =>
+    `# ทดสอบ\n## เครื่องปรุง\n- ${ingredient}\n## วิธีทำ\nปรุงให้สุก`;
+
+  it("classifies plant-only ingredients as vegan", () =>
+    expect(classifyThaiRecipe(recipeText("เต้าหู้ 100 กรัม")).category).toBe(
+      "Vegan",
+    ));
+  it("classifies eggs and dairy as vegetarian", () =>
+    expect(classifyThaiRecipe(recipeText("ไข่ไก่ 2 ฟอง")).category).toBe(
+      "Vegetarian",
+    ));
+  it("classifies seafood as pescatarian", () =>
+    expect(classifyThaiRecipe(recipeText("น้ำปลา 1 ช้อนโต๊ะ")).category).toBe(
+      "Pescatarian",
+    ));
+  it("marks pork as unrestricted and Halal-incompatible", () =>
+    expect(classifyThaiRecipe(recipeText("เนื้อหมู 200 กรัม"))).toMatchObject({
+      category: "No restriction",
+      halalCompatibility: "incompatible",
+    }));
+  it("leaves recipes without structured ingredients for review", () =>
+    expect(classifyThaiRecipe("# หมายเหตุทั่วไป")).toMatchObject({
+      category: "Other",
+      halalCompatibility: "needs-review",
+    }));
 });

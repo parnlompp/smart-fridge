@@ -12,10 +12,13 @@ export function isDietCompatible(
     return ["Pescatarian", "Vegetarian", "Vegan"].includes(
       recipe.dietaryCategory,
     );
-  if (preference === "Halal")
+  if (preference === "Halal") {
+    if (recipe.source?.halalCompatibility)
+      return recipe.source.halalCompatibility === "compatible";
     return ["Halal", "Vegetarian", "Vegan", "Pescatarian"].includes(
       recipe.dietaryCategory,
     );
+  }
   return true;
 }
 
@@ -26,6 +29,8 @@ export function isReligiousRestrictionCompatible(
   const normalized = restriction?.trim().toLowerCase();
   if (!normalized) return true;
   if (["halal", "islam", "islamic", "muslim"].includes(normalized)) {
+    if (recipe.source?.halalCompatibility)
+      return recipe.source.halalCompatibility === "compatible";
     return ["Halal", "Vegetarian", "Vegan", "Pescatarian"].includes(
       recipe.dietaryCategory,
     );
